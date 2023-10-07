@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+
+<h1>Welcome! Please login below: </h1>
+    
+<form action="/login/", method = "post">
+    <h2>Username: </h2>
+    <input type="text", name="username"><br>
+    <h2>Password: </h2>
+    <input type="text", name="password"><br>
+<input type="submit", value="Login">
+</form>
+    
+<h2>{{return_info}}</h2>
+
+<form action="/create_account/", method="post">
+    <input type="submit", value="Don't have an account? Create one!">
+</form>
+
+</body>
+</html>
