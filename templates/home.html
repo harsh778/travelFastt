@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+
+    <script>
+        function getLocation() {
+            try {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    alert("Current Latitude: " + latitude + ". Current Longitude: " + longitude);
+                });
+            } catch (err) {
+                alert("There was an error attempting to access your current location. Check if permissions enabled.");
+            }
+        }
+    </script>
 </head>
 <body>
 
 <h1>Hello {{user}}!</h1>
+<button onclick="getLocation()">Get My Current Latitude and Longitude</button>
+
+</body>
