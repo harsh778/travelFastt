@@ -53,10 +53,10 @@ def login():
             session['id'] = account['id']
             session['username'] = account['username']
             msg = 'You\'re logged in!'
-            return render_template('templates\home.html', user = username, return_info = msg)
+            return render_template("home.html", user = username, return_info = msg)
         else:
             msg = 'Incorrect username or password'
-    return render_template('templates\login.html', return_info = msg)
+    return render_template("login.html", return_info = msg)
             
     # try:
     #     username = request.form["username"]
@@ -82,3 +82,7 @@ def create_account():
     else:
         user_credentials[username] = password
         return render_template("account_create.html", return_info = "Account succesfully created!")
+    
+@app.route('/temp_bypass_to_map/', methods=["POST", "GET"])
+def to_map():
+    return render_template("home.html", user = "TEMP", return_info = "TEMP")
