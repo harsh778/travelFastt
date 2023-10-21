@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <link href="global.css" rel="stylesheet" type="text/css">
 
+    <!-- Required imports for leaflet.js (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <!-- Move this to its own js file later-->
     <script>
+        // Map Setup (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)
+        const map = L.map('map'); 
+        map.setView([51.505, -0.09], 13); 
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map); 
+
+        let marker;
+
         function getLocation() {
             try {
                 navigator.geolocation.getCurrentPosition(position => {
                     let latitude = position.coords.latitude;
                     let longitude = position.coords.longitude;
-                    alert("Current Latitude: " + latitude + ". Current Longitude: " + longitude);
+                    //alert("Current Latitude: " + latitude + ". Current Longitude: " + longitude);
+
+                    //Adding marker of current location to map (Same source as map setup and imports)
+                    if (marker) { map.remove(marker); }
+                    marker = L.marker([latitude, longitude]).addTo(map);
+                    map.setView([latitude, longitude]);
                 });
             } catch (err) {
                 alert("There was an error attempting to access your current location. Check if permissions enabled.");
@@ -21,6 +42,8 @@
 <body>
 
 <h1>Hello {{user}}!</h1>
-<button onclick="getLocation()">Get My Current Latitude and Longitude</button>
+
+<div id="map"></div>
+<button onclick="getLocation()">Show My Current Latitude and Longitude</button>
 
 </body>
