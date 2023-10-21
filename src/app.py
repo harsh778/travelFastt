@@ -6,7 +6,7 @@ import re
 import secrets
 from datetime import timedelta
 
-app = Flask("TravelFast")
+app = Flask(__name__)
 
 
 app.config['SESSION_PERMANENT'] = False
@@ -23,7 +23,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'TravelFastDB'
 
-app.config.from_object("TravelFast")
+app.config.from_object(__name__)
 
 Session(app)
 mysql = MySQL(app)
@@ -53,10 +53,10 @@ def login():
             session['id'] = account['id']
             session['username'] = account['username']
             msg = 'You\'re logged in!'
-            return render_template('home.html', user = username, return_info = msg)
+            return render_template('templates\home.html', user = username, return_info = msg)
         else:
             msg = 'Incorrect username or password'
-    return render_template('login.html', return_info = msg)
+    return render_template('templates\login.html', return_info = msg)
             
     # try:
     #     username = request.form["username"]
