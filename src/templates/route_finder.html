@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Route Finder</title>
+    <link href="global.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<h1>Add the Destinations You Want in Your Route Below:</h1>
+    
+<form action="/add_location/", method = "post">
+    <h2>Latitude: </h2>
+    <input type="number", step="any", name="latitude"><br>
+    <h2>Longitude: </h2>
+    <input type="number", step="any", name="longitude"><br>
+<input type="submit", value="Add Location">
+</form>
+
+<form action="/clear_route_locations/", method="post">
+    <input type="submit", value="Clear all places in route">
+</form>
+<br>
+
+<form action="/calculate_route/", method="post">
+    <input type="submit", value="Calculate my route!">
+</form>
+    
+<h1>Current Locations Added: </h1>
+<p style="color:green">{{return_info}}</p>
+
+<form action="/login/", method="post">
+    <input type="submit", value="Go back to login page">
+</form>
+
+</body>
+</html>
