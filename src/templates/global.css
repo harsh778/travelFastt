@@ -1,1 +1,4 @@
 #map { height: 400px }
+
+p { color: green } /* Used for the return info in route finder. If needed, move that <p> to a div to avoid messing with other future paragraphs*/
+/* Not sure why this isn't being included in the html files properly, leaving this here for concept*/

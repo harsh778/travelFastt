@@ -6,6 +6,8 @@ import re
 import secrets
 from datetime import timedelta
 
+import algorithms.bruteforce as BruteForceAlgorithm
+
 app = Flask(__name__)
 
 
@@ -34,6 +36,8 @@ def redirect_to_login():
     return render_template("login.html")
 
 user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder for the real database system for now
+
+user_locations = [] # Just a placeholder for the real database system for now
 
 # took inspiration for mysql functionality from https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
 
@@ -86,3 +90,41 @@ def create_account():
 @app.route('/temp_bypass_to_map/', methods=["POST", "GET"])
 def to_map():
     return render_template("home.html", user = "TEMP", return_info = "TEMP")
+
+@app.route('/temp_bypass_to_route_finder/', methods=["POST", "GET"])
+def to_route_finder():
+    return render_template("route_finder.html", return_info = "Your list of added locations will show up here!")
+
+@app.route('/add_location/', methods=["POST", "GET"])
+def add_location():
+    try:
+        latitude = float(request.form["latitude"])
+        longitude = float(request.form["longitude"])
+    except:
+        return render_template("route_finder.html", return_info = "Unable to add most recent location. Did you input numbers to both fields?")
+    
+    
+    user_locations.append([latitude, longitude])
+    added_duplicate = False
+    formatted_locations_string = ""
+    for i, location in enumerate(user_locations):
+        if location[0] == latitude and location[1] == longitude and i != len(user_locations) - 1: # User tried to add duplicate location, ignored by skipping it entirely
+            added_duplicate = True
+            continue
+        formatted_locations_string += f"Latitude: {location[0]}, Longitude: {location[1]} "
+    if added_duplicate:
+        user_locations.pop() # Remove the duplicate location
+    return render_template("route_finder.html", return_info = formatted_locations_string)
+
+@app.route('/clear_route_locations/', methods=["POST", "GET"])
+def clear_locations():
+    user_locations.clear()
+    return render_template("route_finder.html", return_info = "Route Locations Cleared.")
+
+@app.route('/calculate_route/', methods=["POST", "GET"])
+def calculate_route():
+    route = BruteForceAlgorithm.best_route(user_locations)
+    formatted_route_string = "Full Route --> "
+    for i, location in enumerate(route):
+        formatted_route_string += f"Stop {i + 1}: Latitude {location[0]}, Longitude {location[1]}. "
+    return render_template("route_finder.html", return_info = formatted_route_string)
