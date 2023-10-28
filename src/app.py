@@ -20,10 +20,11 @@ app.config['SESSION_FILE_THRESHOLD'] = 100
 app.secret_key = secrets.token_urlsafe(16)
  
 # figure these out after we host it on pythonanywhere
-app.config['MYSQL_HOST'] = 'pythonanywhere' 
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
-app.config['MYSQL_DB'] = 'TravelFastDB'
+# for now, I have it configured for my local host
+app.config['MYSQL_HOST'] = 'localhost' 
+app.config['MYSQL_USER'] = 'myAdmin'
+app.config['MYSQL_PASSWORD'] = 'mypassword'
+app.config['MYSQL_DB'] = 'travelfast'
 
 app.config.from_object(__name__)
 
@@ -31,13 +32,19 @@ Session(app)
 mysql = MySQL(app)
 
 
+user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder for the real database system for now
+
+user_locations = [] # Just a placeholder for the real database system for now
+
+
+# ------------ HOME PAGE --------------
+
 @app.route('/')
 def redirect_to_login():
     return render_template("login.html")
 
-user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder for the real database system for now
 
-user_locations = [] # Just a placeholder for the real database system for now
+# ------------ LOGIN REQUEST --------------
 
 # took inspiration for mysql functionality from https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
 
@@ -48,9 +55,8 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(
-            'SELECT * FROM users WHERE username = % s AND password = % s', (username, password)
-        )
+        mySQLCommand = 'SELECT * FROM travelfast.users WHERE username = \'' + username + '\' AND password = \'' + password + '\';'
+        cursor.execute( mySQLCommand )
         account = cursor.fetchone()
         if account:
             session['loggedin'] = True
@@ -73,27 +79,68 @@ def login():
     #     return render_template("login.html", return_info = "Incorrect password for this account! Please try again.")
     # else:
     #     return render_template("home.html", user = username)
-    
+
+
+# ------------ CREATE ACCOUNT POST --------------
+
+# took inspiration for mysql functionality from https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
+
 @app.route('/create_account/', methods=["POST", "GET"])
 def create_account():
-    try:
+    msg = ''
+    print("HERE")
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form["username"]
         password = request.form["password"]
-    except:
-        return render_template("account_create.html")
-    if username in user_credentials:
-        return render_template("account_create.html", return_info = "This username already exists!")
-    else:
-        user_credentials[username] = password
-        return render_template("account_create.html", return_info = "Account succesfully created!")
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        mySQLCommand = 'SELECT * FROM travelfast.users WHERE \'' + username + '\';'
+        cursor.execute( mySQLCommand )
+        account = cursor.fetchone()
+        
+        if account:
+            msg = 'Username already exists'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Only characters and numbers allowed in username!'
+        elif not username or not password:
+            msg = 'Fill out the form'
+        else:
+            myConnection = mysql.connection
+            insertCursor = mysql.connection.cursor()
+            mySQLCommand = 'INSERT INTO travelfast.users (username, password) VALUES (\'' + username + '\', \'' + password + '\');' 
+            insertCursor.execute( mySQLCommand )
+            myConnection.commit()
+            insertCursor.close()
+            msg = 'Account created!'
+            return render_template("login.html", return_info = msg)
+    elif request.method == 'POST':
+        msg = 'Please create an account to continue!'
+    return render_template("account_create.html", return_info = msg)
     
+    
+    # try:
+    #     username = request.form["username"]
+    #     password = request.form["password"]
+    # except:
+    #     return render_template("account_create.html")
+    # if username in user_credentials:
+    #     return render_template("account_create.html", return_info = "This username already exists!")
+    # else:
+    #     user_credentials[username] = password
+    #     return render_template("account_create.html", return_info = "Account succesfully created!")
+    
+    
+
+
 @app.route('/temp_bypass_to_map/', methods=["POST", "GET"])
 def to_map():
     return render_template("home.html", user = "TEMP", return_info = "TEMP")
 
+
 @app.route('/temp_bypass_to_route_finder/', methods=["POST", "GET"])
 def to_route_finder():
     return render_template("route_finder.html", return_info = "Your list of added locations will show up here!")
+
 
 @app.route('/add_location/', methods=["POST", "GET"])
 def add_location():
@@ -116,10 +163,12 @@ def add_location():
         user_locations.pop() # Remove the duplicate location
     return render_template("route_finder.html", return_info = formatted_locations_string)
 
+
 @app.route('/clear_route_locations/', methods=["POST", "GET"])
 def clear_locations():
     user_locations.clear()
     return render_template("route_finder.html", return_info = "Route Locations Cleared.")
+
 
 @app.route('/calculate_route/', methods=["POST", "GET"])
 def calculate_route():
