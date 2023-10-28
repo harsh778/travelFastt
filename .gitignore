@@ -1,0 +1,8 @@
+# ignore files in vscode virtual python environment
+.venv/
+
+# ignore files in flask session
+flask_session/
+
+# ignore files in pycache
+__pycache__/
