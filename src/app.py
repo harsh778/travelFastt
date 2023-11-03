@@ -79,6 +79,23 @@ def login():
     #     return render_template("login.html", return_info = "Incorrect password for this account! Please try again.")
     # else:
     #     return render_template("home.html", user = username)
+    
+    
+    
+# ------------ LOGOUT --------------
+# need to research more about sessions and how we are keeping track of the user in our code
+@app.route('/logout/')
+def logout():
+    msg = ''
+    if session['loggedin']:
+        session['loggedin'] = False
+        session['id'] = None
+        session['username'] = None
+        msg = 'You logged out'
+    else:
+        msg = 'You never logged in. Please login'
+    return render_template("login.html", return_info = msg)
+
 
 
 # ------------ CREATE ACCOUNT POST --------------
@@ -88,7 +105,6 @@ def login():
 @app.route('/create_account/', methods=["POST", "GET"])
 def create_account():
     msg = ''
-    print("HERE")
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form["username"]
         password = request.form["password"]
@@ -130,6 +146,48 @@ def create_account():
     #     return render_template("account_create.html", return_info = "Account succesfully created!")
     
     
+# ------------ SAVE USER'S ROUTES --------------
+# -Stores a user's route in the database
+# -This route has no method for now
+@app.route('/store_user_route/')
+def store_user_route():
+    msg = ''
+    if session['loggedin']:
+        user_id = session['id']
+        blob = locations_to_blob()
+        latitudes_blob = blob[0]
+        longitudes_blob = blob[1]
+        
+        if latitudes_blob == None or longitudes_blob == None:
+            msg = 'No locations to save'
+            return render_template("route_finder.html", return_info = msg)
+        
+        myConnection = mysql.connection
+        insertCursor = mysql.connection.cursor()
+        mySQLCommand = 'INSERT INTO travelfast.routes (id, latitude, longitude) VALUES (\'' + user_id + '\',\'' + latitudes_blob + '\', \'' + longitudes_blob + '\');' 
+        insertCursor.execute( mySQLCommand )
+        myConnection.commit()
+        insertCursor.close()
+        
+    msg = 'You must be logged in to save routes'
+    return render_template("login.html", return_info="msg")
+
+# helper to convert user_locations to a blob (a long string)
+def locations_to_blob():
+    lats = ''
+    longs = ''
+    for lat_long in user_locations:
+        lats += (str(lat_long[0]) + ', ')
+        longs += (str(lat_long[1]) + ', ')
+    if len(lats) >= 3 and len(longs) >= 3:
+        lats = lats[:-2]
+        longs = longs[:-2]
+    else:
+        lats = None
+        longs = None
+    return [lats, longs]
+
+
 
 
 @app.route('/temp_bypass_to_map/', methods=["POST", "GET"])
