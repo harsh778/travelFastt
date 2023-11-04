@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, make_response, jsonify
 from flask_session import Session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -235,3 +235,10 @@ def calculate_route():
     for i, location in enumerate(route):
         formatted_route_string += f"Stop {i + 1}: Latitude {location[0]}, Longitude {location[1]}. "
     return render_template("route_finder.html", return_info = formatted_route_string)
+
+@app.route('/return_route/', methods=["POST", "GET"])
+def return_route():
+    unused_request = request.get_json(force=True) # Don't actually need anything from the request but need to 'process' it
+    route = BruteForceAlgorithm.best_route(user_locations) # Later this should just be a fetch from the database instead of recalculating every time
+    response = make_response(jsonify(route))
+    return response
