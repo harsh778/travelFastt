@@ -29,6 +29,62 @@
 <h1>Current Locations Added: </h1>
 <p style="color:green">{{return_info}}</p>
 
+<!--                                   -->
+<!--  Actually Showing the Route Code: -->
+<!--                                   -->
+
+    <!-- Required imports for leaflet.js (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <style>
+        #map { height: 400px } /* Wanted to put this in the css file but for some reason wasn't working there */
+    </style>
+    <script>
+        function displayRoute() {
+            // Map Setup (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)
+            const map = L.map('map'); 
+            map.setView([51.505, -0.09], 13); // Gets replaced by first location in route's coordinates
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map); 
+
+            getRoute().then((route_json) => {
+                const non_trimmed_route_string = route_json.toString();
+                let route_string = "";
+                for (let i = 0; i < non_trimmed_route_string.length; i++) {
+                    if (non_trimmed_route_string[i] != " ") { route_string += non_trimmed_route_string[i]; }
+                }
+                route_string += "," // Added so the last location coordinate gets parsed 
+                let route = [];
+                let lat_long_index = 0; // 0 for when we are adding character to lat, 1 for long
+                let location_as_strings = ["", ""]; // will temporarily store each location
+                for (let i = 0; i < route_string.length; i++) {
+                    if (route_string[i] == ",") {
+                        if (lat_long_index == 0) { lat_long_index = 1; }
+                        else {
+                            route.push([parseFloat(location_as_strings[0]), parseFloat(location_as_strings[1])]);
+                            location_as_strings = ["", ""];
+                            lat_long_index = 0;
+                        }
+                    } else { location_as_strings[lat_long_index] += route_string[i]; }
+                }
+                for (let i = 0; i < route.length; i++) { L.marker(route[i]).addTo(map); }
+                let squared_start_end_dist = (route[0][0] - route[route.length - 1][0])**2 + (route[0][1] - route[route.length - 1][1])**2
+                let zoom = Math.floor(10 / Math.sqrt(squared_start_end_dist)); // From local testing this seems to be a good conversion function to OpenStreetMap's zoom
+                map.setView(route[Math.floor(route.length/2)], zoom); // Centers map on the median location in the route with 
+            });
+        }
+        async function getRoute() {
+            const response = await fetch('/return_route/', { method: "POST", credentials: "include", body: JSON.stringify(["placeholder value"])});
+            return response.json();
+        }
+    </script>
+
+<div id="map"></div>
+<button id="test", onclick="displayRoute()">Show Me My Route!</button>
+
 <form action="/login/", method="post">
     <input type="submit", value="Go back to login page">
 </form>
