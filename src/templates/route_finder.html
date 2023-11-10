@@ -7,13 +7,22 @@
 </head>
 <body>
 
-<h1>Add the Destinations You Want in Your Route Below:</h1>
+<h1>Add the Destinations You Want in Your Route Below by its Coordinates:</h1>
     
-<form action="/add_location/", method = "post">
+<form action="/add_location_by_coords/", method = "post">
     <h2>Latitude: </h2>
     <input type="number", step="any", name="latitude"><br>
     <h2>Longitude: </h2>
     <input type="number", step="any", name="longitude"><br>
+<input type="submit", value="Add Location">
+</form>
+
+<h1>Or Alternatively, Add the Destination by its Name:</h1>
+<p>Make sure to be specific and note that addresses work a lot better than the name alone for smaller places</p>
+
+<form action="/add_location_by_name", method = "post">
+    <h2>Name of the Place: </h2>
+    <input type="text", name="name"><br>
 <input type="submit", value="Add Location">
 </form>
 
@@ -28,6 +37,7 @@
     
 <h1>Current Locations Added: </h1>
 <p style="color:green">{{return_info}}</p>
+<p style="color:green">{{place_names}}</p>
 
 <!--                                   -->
 <!--  Actually Showing the Route Code: -->
@@ -71,9 +81,13 @@
                     } else { location_as_strings[lat_long_index] += route_string[i]; }
                 }
                 for (let i = 0; i < route.length; i++) { L.marker(route[i]).addTo(map); }
-                let squared_start_end_dist = (route[0][0] - route[route.length - 1][0])**2 + (route[0][1] - route[route.length - 1][1])**2
-                let zoom = Math.floor(10 / Math.sqrt(squared_start_end_dist)); // From local testing this seems to be a good conversion function to OpenStreetMap's zoom
-                map.setView(route[Math.floor(route.length/2)], zoom); // Centers map on the median location in the route with 
+                var polyline = L.polyline(route, {color: 'red'}).addTo(map); // From https://leafletjs.com/reference.html#polyline
+                map.fitBounds(polyline.getBounds());
+
+                // Map view can just be set with the polyline so don't really need this anymore but left for future reference
+                    // let squared_start_end_dist = (route[0][0] - route[route.length - 1][0])**2 + (route[0][1] - route[route.length - 1][1])**2
+                    // let zoom = Math.floor(10 / Math.sqrt(squared_start_end_dist)); // From local testing this seems to be a good conversion function to OpenStreetMap's zoom
+                    // map.setView(route[Math.floor(route.length/2)], zoom); // Centers map on the median location in the route with 
             });
         }
         async function getRoute() {
