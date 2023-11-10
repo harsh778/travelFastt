@@ -10,6 +10,7 @@ def return_coords(places): #takes in a list of places and returns a list of thei
         location = geolocator.geocode(place)
         to_return.append([location.latitude, location.longitude])
       except:
-        print("That isn't a valid place")
+        #print("That isn't a valid place")
+        return [-1]; # Obviously invalid return value to denote a failure in the conversion
     return to_return
 

@@ -7,6 +7,7 @@ import secrets
 from datetime import timedelta
 
 import algorithms.bruteforce as BruteForceAlgorithm
+import algorithms.places_to_coordinates as CoordConverter
 
 app = Flask(__name__)
 
@@ -35,6 +36,7 @@ mysql = MySQL(app)
 user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder for the real database system for now
 
 user_locations = [] # Just a placeholder for the real database system for now
+user_location_names = []
 
 
 # ------------ HOME PAGE --------------
@@ -200,8 +202,8 @@ def to_route_finder():
     return render_template("route_finder.html", return_info = "Your list of added locations will show up here!")
 
 
-@app.route('/add_location/', methods=["POST", "GET"])
-def add_location():
+@app.route('/add_location_by_coords/', methods=["POST", "GET"])
+def add_location_by_coords():
     try:
         latitude = float(request.form["latitude"])
         longitude = float(request.form["longitude"])
@@ -210,30 +212,73 @@ def add_location():
     
     
     user_locations.append([latitude, longitude])
+    user_location_names.append("Unnamed")
     added_duplicate = False
-    formatted_locations_string = ""
+    formatted_locations_string = "Place Locations: "
+    formatted_names_string = "Place Names: "
     for i, location in enumerate(user_locations):
         if location[0] == latitude and location[1] == longitude and i != len(user_locations) - 1: # User tried to add duplicate location, ignored by skipping it entirely
             added_duplicate = True
             continue
         formatted_locations_string += f"Latitude: {location[0]}, Longitude: {location[1]} "
+        formatted_names_string += user_location_names[i] + ", "
     if added_duplicate:
         user_locations.pop() # Remove the duplicate location
-    return render_template("route_finder.html", return_info = formatted_locations_string)
+        user_location_names.pop()
+    if (len(formatted_names_string) > 2):
+        formatted_names_string = formatted_names_string[:-2] # removes last comma and space
+    return render_template("route_finder.html", return_info = formatted_locations_string, place_names = formatted_names_string)
+
+@app.route('/add_location_by_name', methods=["POST", "GET"])
+def add_location_by_name():
+    new_place_name = request.form["name"]
+    new_lat_long_arr = CoordConverter.return_coords([new_place_name])[0]
+    if (new_lat_long_arr == -1): # Invalid place, at least according to API
+        return render_template("route_finder.html", return_info = "We failed to find a place corresponding to the most recently added name")
+    
+    latitude, longitude = new_lat_long_arr
+    user_locations.append(new_lat_long_arr)
+    user_location_names.append(new_place_name)
+    added_duplicate = False
+    formatted_locations_string = "Place Locations: "
+    formatted_names_string = "Place Names: "
+    for i, location in enumerate(user_locations):
+        if location[0] == latitude and location[1] == longitude and i != len(user_locations) - 1: # User tried to add duplicate location, ignored by skipping it entirely
+            added_duplicate = True
+            continue
+        formatted_locations_string += f"Latitude: {location[0]}, Longitude: {location[1]} "
+        formatted_names_string += user_location_names[i] + ", "
+    if added_duplicate:
+        user_locations.pop() # Remove the duplicate location
+        user_location_names.pop()
+    if (len(formatted_names_string) > 2):
+        formatted_names_string = formatted_names_string[:-2] # removes last comma and space
+    return render_template("route_finder.html", return_info = formatted_locations_string, place_names = formatted_names_string)
 
 
 @app.route('/clear_route_locations/', methods=["POST", "GET"])
 def clear_locations():
     user_locations.clear()
+    user_location_names.clear()
     return render_template("route_finder.html", return_info = "Route Locations Cleared.")
 
 
 @app.route('/calculate_route/', methods=["POST", "GET"])
 def calculate_route():
     route = BruteForceAlgorithm.best_route(user_locations)
+    sorted_indices = [i for i in range(len(route))]
+    for i, location in enumerate(route):
+        for j, inputted_location in enumerate(user_locations):
+            if location == inputted_location:
+                sorted_indices[i] = j
+
     formatted_route_string = "Full Route --> "
     for i, location in enumerate(route):
-        formatted_route_string += f"Stop {i + 1}: Latitude {location[0]}, Longitude {location[1]}. "
+        formatted_route_string += f"Stop {i + 1}: "
+        if (user_location_names[sorted_indices[i]] == "Unnamed"):
+            formatted_route_string += f"Latitude {location[0]}, Longitude {location[1]}. "
+        else:
+            formatted_route_string += user_location_names[sorted_indices[i]] + ". "
     return render_template("route_finder.html", return_info = formatted_route_string)
 
 @app.route('/return_route/', methods=["POST", "GET"])
