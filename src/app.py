@@ -241,6 +241,8 @@ def clear_locations():
 
 @app.route('/calculate_route/', methods=["POST", "GET"])
 def calculate_route():
+    if len(user_locations) <= 1:
+        return render_template("route_finder.html", return_info = "You must input atleast two locations")
     route = BruteForceAlgorithm.best_route(user_locations)
     sorted_indices = [i for i in range(len(route))]
     for i, location in enumerate(route):
