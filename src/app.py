@@ -124,7 +124,7 @@ def create_account():
 # ------------ SAVE USER'S ROUTES --------------
 # -Stores a user's route in the database
 # -This route has no method for now
-@app.route('/store_user_route/')
+@app.route('/store_user_route/', methods=["POST", "GET"])
 def store_user_route():
     msg = ''
     if session['loggedin']:
@@ -164,7 +164,25 @@ def locations_to_blob():
 
 
 
-
+# ------------ RETRIEVE USER'S ROUTES --------------
+# -Stores a user's route in the database
+# -This route has no method for now
+@app.route('/retrieve_user_route/', methods=["POST", "GET"])
+def retrieve_user_route():
+    msg = ''
+    if session['loggedin'] and request.method == 'POST': 
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        mySQLCommand = 'SELECT * FROM travelfast.routes WHERE id = \'' + session['id'] + '\';'
+        cursor.execute( mySQLCommand )
+        route = cursor.fetchone()
+        if route:
+            session['routes'] = route
+            msg = 'We retrieved your routes'
+            return render_template("home.html", return_info=msg) 
+        msg = 'You have no routes saved'
+        return render_template("home.html", return_info=msg)
+    msg = 'You must be logged in to save routes'
+    return render_template("login.html", return_info=msg)
 
 
 
@@ -273,10 +291,10 @@ def return_route():
     route = BruteForceAlgorithm.best_route(user_locations) # Later this should just be a fetch from the database instead of recalculating every time
     response = make_response(jsonify(route))
     return response
+
+
+
 @app.route('/delete_route/', methods=["POST"])
-
-
-
 def delete_route():
     if session['loggedin']: #seshid
         user_id = session['id']
