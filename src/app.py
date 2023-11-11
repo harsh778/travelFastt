@@ -273,3 +273,22 @@ def return_route():
     route = BruteForceAlgorithm.best_route(user_locations) # Later this should just be a fetch from the database instead of recalculating every time
     response = make_response(jsonify(route))
     return response
+@app.route('/delete_route/', methods=["POST"])
+
+def delete_route():
+    if session['loggedin']: #seshid
+        user_id = session['id']
+        route_id = request.form["route_id"]
+
+        myConnection = mysql.connection
+        deleteCursor = mysql.connection.cursor()
+        mySQLCommand = 'DELETE FROM travelfast.routes WHERE user_id = %s AND id = %s'
+        deleteCursor.execute(mySQLCommand, (user_id, route_id))
+        myConnection.commit()
+        deleteCursor.close()
+
+        msg = 'Route deleted successfully!'
+        return redirect(url_for('route_history'))
+
+    msg = 'You must be logged in to delete routes'
+    return render_template("login.html", return_info=msg)
