@@ -40,16 +40,14 @@ user_location_names = []
 
 
 # ------------ HOME PAGE --------------
-
 @app.route('/')
 def redirect_to_login():
     return render_template("login.html")
 
 
+
 # ------------ LOGIN REQUEST --------------
-
 # took inspiration for mysql functionality from https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
-
 @app.route('/login/', methods=["POST", "GET"])
 def login():
     msg = ''
@@ -89,9 +87,7 @@ def logout():
 
 
 # ------------ CREATE ACCOUNT POST --------------
-
 # took inspiration for mysql functionality from https://www.geeksforgeeks.org/profile-application-using-python-flask-and-mysql/
-
 @app.route('/create_account/', methods=["POST", "GET"])
 def create_account():
     msg = ''
@@ -124,10 +120,11 @@ def create_account():
     return render_template("account_create.html", return_info = msg)
     
     
+
 # ------------ SAVE USER'S ROUTES --------------
 # -Stores a user's route in the database
 # -This route has no method for now
-@app.route('/store_user_route/')
+@app.route('/store_user_route/', methods=["POST", "GET"])
 def store_user_route():
     msg = ''
     if session['loggedin']:
@@ -167,15 +164,38 @@ def locations_to_blob():
 
 
 
+# ------------ RETRIEVE USER'S ROUTES --------------
+# -Stores a user's route in the database
+# -This route has no method for now
+@app.route('/retrieve_user_route/', methods=["POST", "GET"])
+def retrieve_user_route():
+    msg = ''
+    if session['loggedin'] and request.method == 'POST': 
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        mySQLCommand = 'SELECT * FROM travelfast.routes WHERE id = \'' + session['id'] + '\';'
+        cursor.execute( mySQLCommand )
+        route = cursor.fetchone()
+        if route:
+            session['routes'] = route
+            msg = 'We retrieved your routes'
+            return render_template("home.html", return_info=msg) 
+        msg = 'You have no routes saved'
+        return render_template("home.html", return_info=msg)
+    msg = 'You must be logged in to save routes'
+    return render_template("login.html", return_info=msg)
+
+
 
 @app.route('/temp_bypass_to_map/', methods=["POST", "GET"])
 def to_map():
     return render_template("home.html", user = "TEMP", return_info = "TEMP")
 
 
+
 @app.route('/temp_bypass_to_route_finder/', methods=["POST", "GET"])
 def to_route_finder():
     return render_template("route_finder.html", return_info = "Your list of added locations will show up here!")
+
 
 
 @app.route('/add_location_by_coords/', methods=["POST", "GET"])
@@ -205,6 +225,8 @@ def add_location_by_coords():
         formatted_names_string = formatted_names_string[:-2] # removes last comma and space
     return render_template("route_finder.html", return_info = formatted_locations_string, place_names = formatted_names_string)
 
+
+
 @app.route('/add_location_by_name', methods=["POST", "GET"])
 def add_location_by_name():
     new_place_name = request.form["name"]
@@ -232,11 +254,13 @@ def add_location_by_name():
     return render_template("route_finder.html", return_info = formatted_locations_string, place_names = formatted_names_string)
 
 
+
 @app.route('/clear_route_locations/', methods=["POST", "GET"])
 def clear_locations():
     user_locations.clear()
     user_location_names.clear()
     return render_template("route_finder.html", return_info = "Route Locations Cleared.")
+
 
 
 @app.route('/calculate_route/', methods=["POST", "GET"])
@@ -259,14 +283,18 @@ def calculate_route():
             formatted_route_string += user_location_names[sorted_indices[i]] + ". "
     return render_template("route_finder.html", return_info = formatted_route_string)
 
+
+
 @app.route('/return_route/', methods=["POST", "GET"])
 def return_route():
     unused_request = request.get_json(force=True) # Don't actually need anything from the request but need to 'process' it
     route = BruteForceAlgorithm.best_route(user_locations) # Later this should just be a fetch from the database instead of recalculating every time
     response = make_response(jsonify(route))
     return response
-@app.route('/delete_route/', methods=["POST"])
 
+
+
+@app.route('/delete_route/', methods=["POST"])
 def delete_route():
     if session['loggedin']: #seshid
         user_id = session['id']
