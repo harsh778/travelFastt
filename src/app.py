@@ -69,24 +69,12 @@ def login():
         else:
             msg = 'Incorrect username or password'
     return render_template("login.html", return_info = msg)
-            
-    # try:
-    #     username = request.form["username"]
-    #     password = request.form["password"]
-    # except:
-    #     return render_template("login.html")
-    # if username not in user_credentials:
-    #     return render_template("login.html", return_info = "Username not found!")
-    # elif user_credentials[username] != password:
-    #     return render_template("login.html", return_info = "Incorrect password for this account! Please try again.")
-    # else:
-    #     return render_template("home.html", user = username)
     
     
     
 # ------------ LOGOUT --------------
 # need to research more about sessions and how we are keeping track of the user in our code
-@app.route('/logout/')
+@app.route('/logout/', methods=['POST'])
 def logout():
     msg = ''
     if session['loggedin']:
@@ -134,18 +122,6 @@ def create_account():
     elif request.method == 'POST':
         msg = 'Please create an account to continue!'
     return render_template("account_create.html", return_info = msg)
-    
-    
-    # try:
-    #     username = request.form["username"]
-    #     password = request.form["password"]
-    # except:
-    #     return render_template("account_create.html")
-    # if username in user_credentials:
-    #     return render_template("account_create.html", return_info = "This username already exists!")
-    # else:
-    #     user_credentials[username] = password
-    #     return render_template("account_create.html", return_info = "Account succesfully created!")
     
     
 # ------------ SAVE USER'S ROUTES --------------
