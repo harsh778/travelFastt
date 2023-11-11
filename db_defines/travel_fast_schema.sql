@@ -9,8 +9,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS `routes` (
+CREATE TABLE `routes` (
   `id` int NOT NULL,
+  `route_id` int unsigned DEFAULT NULL,
   `latitude` mediumblob,
   `longitude` mediumblob,
   UNIQUE KEY `id_UNIQUE` (`id`),

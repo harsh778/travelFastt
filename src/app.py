@@ -275,6 +275,8 @@ def return_route():
     return response
 @app.route('/delete_route/', methods=["POST"])
 
+
+
 def delete_route():
     if session['loggedin']: #seshid
         user_id = session['id']
