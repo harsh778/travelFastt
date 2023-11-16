@@ -7,6 +7,7 @@ import secrets
 from datetime import timedelta
 
 import algorithms.bruteforce as BruteForceAlgorithm
+import algorithms.nearestneighbor as NearestNeighborsAlgorithm
 import algorithms.places_to_coordinates as CoordConverter
 
 app = Flask(__name__)
@@ -37,6 +38,8 @@ user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder
 
 user_locations = [] # Just a placeholder for the real database system for now
 user_location_names = []
+
+route_algorithm_method = BruteForceAlgorithm.best_route # Default computation method will be the BFA
 
 
 # ------------ HOME PAGE --------------
@@ -265,9 +268,18 @@ def clear_locations():
 
 @app.route('/calculate_route/', methods=["POST", "GET"])
 def calculate_route():
+    try:
+        inputted_algorithm_choice = request.form["algorithm_choice"]
+    except: # No choice selected
+        return render_template("route_finder.html", return_info = "Please select a route computation algorithm and try again")
+    if inputted_algorithm_choice == "Brute Force":
+        route_algorithm_method = BruteForceAlgorithm.best_route
+    if inputted_algorithm_choice == "Nearest Neighbors":
+        route_algorithm_method = NearestNeighborsAlgorithm.best_route   
+
     if len(user_locations) <= 1:
-        return render_template("route_finder.html", return_info = "You must input atleast two locations")
-    route = BruteForceAlgorithm.best_route(user_locations)
+        return render_template("route_finder.html", return_info = "You must input at least two locations")
+    route = route_algorithm_method(user_locations)
     sorted_indices = [i for i in range(len(route))]
     for i, location in enumerate(route):
         for j, inputted_location in enumerate(user_locations):
