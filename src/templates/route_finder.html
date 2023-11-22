@@ -24,16 +24,19 @@
     <h2>Name of the Place: </h2>
     <input type="text", name="name"><br>
 <input type="submit", value="Add Location">
-</form>
+</form><br>
+
+<h1>Ready to Get Your Route? Select one of the Algorithms Below:</h1>
+
+<form action="/calculate_route/", method="post">
+    <input type="radio", name="algorithm_choice", value="Brute Force"> Brute Force <br>
+    <input type="radio", name="algorithm_choice", value="Nearest Neighbors"> Nearest Neighbors <br>
+    <input type="submit", value="Calculate my route!">
+</form><br>
 
 <form action="/clear_route_locations/", method="post">
     <input type="submit", value="Clear all places in route">
-</form>
-<br>
-
-<form action="/calculate_route/", method="post">
-    <input type="submit", value="Calculate my route!">
-</form>
+</form><br>
     
 <h1>Current Locations Added: </h1>
 <p style="color:green">{{return_info}}</p>
