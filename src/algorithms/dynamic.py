@@ -10,6 +10,16 @@ def best_route(coordinates): #assumes that the starting point is the origin, how
         to_add =  to_add[0:i] + '1' + to_add[i+1:]
         route_to_cost[to_add] = {i : [i]} 
     
+    adjacency_matrix = [[0] * len(coordinates)]
+    for _ in range(len(coordinates) - 1):
+        adjacency_matrix.append([0] * len(coordinates))
+    for i in range(len(coordinates)):
+        for j in range(len(coordinates)):
+            adjacency_matrix[i][j] = squared_distance(coordinates[i], coordinates[j])
+    distances = [0] * len(coordinates)
+    for i in range(len(coordinates)):
+        distances[i] = squared_distance([0, 0], coordinates[i])
+    
     #now the major dynammic programming step
     for i in range(1, len(coordinates)): #loop through all sub-routes of length i
         new_route_to_cost = {}
@@ -24,7 +34,7 @@ def best_route(coordinates): #assumes that the starting point is the origin, how
                         new_route_to_cost[new_bit_string] = {}
 
                     for entry in route_to_cost[key]:
-                        cost = cost_function(route_to_cost[key][entry] + [j], coordinates)
+                        cost = cost_function(route_to_cost[key][entry] + [j], coordinates, adjacency_matrix, distances)
                         if best_cost == None or cost < best_cost:
                             best_cost = cost
                             new_route_to_cost[new_bit_string][j] = route_to_cost[key][entry] + [j] 
@@ -35,7 +45,7 @@ def best_route(coordinates): #assumes that the starting point is the origin, how
     key = '1' * len(coordinates)
     for entry in route_to_cost[key]: #final loop, since at this point route_to_cost stores all optimal subroutes ending with each different place, we just need 
       #to see which is the best place to end up at
-        cost = cost_function(route_to_cost[key][entry], coordinates)
+        cost = cost_function(route_to_cost[key][entry], coordinates, adjacency_matrix, distances)
         if final_best_cost == None or cost < final_best_cost:
             final_best_cost = cost
             final_route = route_to_cost[key][entry]
@@ -50,12 +60,16 @@ def select_coords(coords, indices): #helper to make convert a route of the for [
     return to_return
 
 def squared_distance(coord1, coord2):
+    global count
+    count += 1
     return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
 
-def cost_function(route, coordinates): 
-    cost = squared_distance([0, 0], coordinates[route[0]])
+
+
+def cost_function(route, coordinates, adjacency_matrix, distances): 
+    cost = distances[route[0]]
     for i in range(1, len(route)):
-        cost += squared_distance(coordinates[route[i]], coordinates[route[i - 1]])
+        cost += adjacency_matrix[route[i]][route[i-1]]
     return cost
     
 
