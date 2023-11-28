@@ -1,0 +1,149 @@
+body { background-color: aquamarine }
+
+h1 { color:darkslateblue }
+h2 { color:darkslateblue }
+
+#title {
+    font-size: 450%;
+    margin: auto;
+    padding-left: 17.5%;
+    width: 70%;
+}
+
+#outer_centering {
+    margin: auto;
+    padding-left: 17.5%;
+    width: 90%;
+}
+
+#map { height: 400px }
+
+#return_info { color: darkgreen }
+#place_names { color: darkgreen}
+
+#algorithm_choice_form, #coord_adder_form, #name_adder_form { 
+    background-color: lightskyblue;
+    width: 15%;
+    margin-left: 25%;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+}
+
+#show_route {
+    padding-left: 41%;
+}
+
+/* All the button colorings: */
+
+#coord_add_button, #name_add_button {
+    background: mediumseagreen;
+    color: white;
+    border-style: outset;
+    border-color: darkseagreen;
+    height: 20px;
+    width: 120px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#coord_add_button:hover, #name_add_button:hover {
+    background: forestgreen;
+    color: white;
+    border-style: outset;
+    border-color: darkgreen;
+    height: 20px;
+    width: 120px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#calculate_route_button {
+    background: lightseagreen;
+    color: white;
+    border-style: outset;
+    border-color: aquamarine;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#calculate_route_button:hover {
+    background: darkcyan;
+    color: white;
+    border-style: outset;
+    border-color: darkslateblue;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#show_route_button {
+    background: lightseagreen;
+    color: white;
+    border-style: outset;
+    border-color: cyan;
+    height: 50px;
+    width: 200px;
+    font-size: 130%;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#show_route_button:hover {
+    background: darkcyan;
+    color: white;
+    border-style: outset;
+    border-color: darkslateblue;
+    height: 50px;
+    width: 200px;
+    font-size: 130%;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#clear_route_button {
+    background: tomato;
+    color: white;
+    border-style: outset;
+    border-color: red;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#clear_route_button:hover {
+    background: darkred;
+    color: white;
+    border-style: outset;
+    border-color: maroon;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#logout_button {
+    background: darkgray;
+    color: white;
+    border-style: outset;
+    border-color: gray;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#logout_button:hover {
+    background: rgb(133, 132, 132);
+    color: white;
+    border-style: outset;
+    border-color: rgb(63, 63, 63);
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}

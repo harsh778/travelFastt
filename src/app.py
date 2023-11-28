@@ -8,6 +8,8 @@ from datetime import timedelta
 
 import algorithms.bruteforce as BruteForceAlgorithm
 import algorithms.nearestneighbor as NearestNeighborsAlgorithm
+import algorithms.genetic as GeneticAlgorithm
+import algorithms.dynamic as DynamicProgAlgorithm
 import algorithms.places_to_coordinates as CoordConverter
 
 app = Flask(__name__)
@@ -275,7 +277,11 @@ def calculate_route():
     if inputted_algorithm_choice == "Brute Force":
         route_algorithm_method = BruteForceAlgorithm.best_route
     if inputted_algorithm_choice == "Nearest Neighbors":
-        route_algorithm_method = NearestNeighborsAlgorithm.best_route   
+        route_algorithm_method = NearestNeighborsAlgorithm.best_route
+    if inputted_algorithm_choice == "Dynamic Programming":
+        route_algorithm_method = DynamicProgAlgorithm.best_route
+    if inputted_algorithm_choice == "Genetic Algorithm":
+        route_algorithm_method = GeneticAlgorithm.best_route   
 
     if len(user_locations) <= 1:
         return render_template("route_finder.html", return_info = "You must input at least two locations")

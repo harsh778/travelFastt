@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Page</title>
-    <link href="global.css" rel="stylesheet" type="text/css">
+    <!-- CSS bug fix courtesy of https://stackoverflow.com/questions/13772884/css-problems-with-flask-web-app-->
+    <link href="{{ url_for('static', filename='global.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
 
