@@ -8,6 +8,8 @@
 </head>
 <body>
 
+<h3 id = "user_welcome">{{user_welcome}}</h3> <!-- will only show this the first time they open the page -->
+
 <h1 id = "title">TravelFast Route Finder</h1>
 
 <div id="outer_centering">
@@ -36,6 +38,9 @@
         </form>
     </div><br>
 
+    <h1>Want to Add Your Current Location to Your Route?</h1>
+    <button id="get_user_location_button", onclick="getUserLocation()">Add My Current Location</button>
+
     <h1>Ready to Get Your Route?</h1>
 
     <div id = "algorithm_choice_form">
@@ -48,7 +53,19 @@
             <br>
             <input id="calculate_route_button" type="submit", value="Calculate my route!">
         </form>
+        <br>
+        <form action="/retrieve_user_route/", method="post">
+            <h3>Or If You Already Have a Saved Route: </h3>
+            <input id="retrieve_route_button" type="submit", value="Load My Saved Route">
+        </form>
+
     </div><br>
+
+    <form action="/store_user_route/", method="post">
+        <p>*Note this will overwrite your currently saved route if applicable*</p>
+        <input id="store_route_button" type="submit", value="Save Route to Account">
+    </form>
+    <br>
 
     <form action="/clear_route_locations/", method="post">
         <input id = "clear_route_button" type="submit", value="Clear all places in route">
@@ -59,7 +76,32 @@
     <p id="place_names">{{place_names}}</p>
 </div>
 
+<!--                                                        -->
+<!--  Getting the user's location and sending it to backend -->
+<!--                                                        -->
 
+    <script>
+        function getUserLocation() {
+            let location;
+            // Below is slightly modified migrated code from the now-depracated home.html
+            try {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    location = [latitude, longitude];
+                    sendUserLocationToServer(location);
+                });
+            } catch (err) {
+                //location = [2000, 2000]; // Impossible values (if we get this returned then the location getting failed)
+                console.log("Location get failure");
+            }
+        }
+        function sendUserLocationToServer(user_location) {
+            fetch('/add_user_current_location', { method: "POST", credentials: "include", body: JSON.stringify(user_location)}).then(
+                (response) => console.log("Success")); // Don't actually care about this, just need to resolve the promise
+            window.location.href = '/user_location_added_follow_up/';
+        }
+    </script>
 
 <!--                                   -->
 <!--  Actually Showing the Route Code: -->

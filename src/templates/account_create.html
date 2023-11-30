@@ -8,21 +8,29 @@
 </head>
 <body>
 
-<h1>Welcome to Travel Fast! Create an account below:</h1>
-    
-<form action="/create_account/", method = "post">
-    <h2>Username: </h2>
-    <input type="text", name="username"><br>
-    <h2>Password: </h2>
-    <input type="text", name="password"><br>
-<input type="submit", value="Get Started">
-</form>
-    
-<h2>{{return_info}}</h2>
+<h1 id = "account_create_title" >Create a TravelFast Account Below:</h1>
+<br>
+<div id="create_account_box">
+        
+    <form action="/create_account/", method = "post">
+        <h2>Username: </h2>
+        <input type="text", name="username"><br>
+        <h2>Password: </h2>
+        <input type="text", name="password"><br>
+    <br>
+    <input id="get_started_button" type="submit", value="Get Started!">
+    </form>
+        
+    <h3 id="failed_account_create">{{return_info}}</h3>
 
-<form action="/login/", method="post">
-    <input type="submit", value="Go back to login page">
-</form>
+</div>
+<br>
+<br>
+<div id="go_back_button_centering">
+    <form action="/login/", method="post">
+        <input id="back_to_login_button" type="submit", value="Go back to login page">
+    </form>
+</div>
 
 </body>
 </html>

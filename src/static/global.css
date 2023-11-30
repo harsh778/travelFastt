@@ -2,12 +2,25 @@ body { background-color: aquamarine }
 
 h1 { color:darkslateblue }
 h2 { color:darkslateblue }
+h3 { color:darkslateblue }
 
-#title {
+#user_welcome { color:rgb(54, 85, 211) }
+
+#failed_login_results, #failed_account_create { color:rgb(205, 44, 58) }
+
+#title, #front_page_title {
     font-size: 450%;
     margin: auto;
     padding-left: 17.5%;
     width: 70%;
+}
+
+#account_create_title {
+    width: 36%;
+    padding-left: 2.5%;
+    margin:auto;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 #outer_centering {
@@ -16,10 +29,29 @@ h2 { color:darkslateblue }
     width: 90%;
 }
 
+#create_account_box {
+    background-color: lightskyblue;
+    width: 12%;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+    margin:auto;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 #map { height: 400px }
 
 #return_info { color: darkgreen }
 #place_names { color: darkgreen}
+
+#login_form {
+    background-color: lightskyblue;
+    width: 18%;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+}
 
 #algorithm_choice_form, #coord_adder_form, #name_adder_form { 
     background-color: lightskyblue;
@@ -35,6 +67,140 @@ h2 { color:darkslateblue }
 }
 
 /* All the button colorings: */
+
+#login_button {
+    background: lightseagreen;
+    color: white;
+    border-style: outset;
+    border-color: aquamarine;
+    height: 20px;
+    width: 80px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#login_button:hover {
+    background: darkcyan;
+    color: white;
+    border-style: outset;
+    border-color: darkslateblue;
+    height: 20px;
+    width: 80px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#go_back_button_centering { padding-left: 45%; }
+
+#back_to_login_button {
+    background: darkgray;
+    color: white;
+    border-style: outset;
+    border-color: gray;
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#back_to_login_button:hover {
+    background: rgb(133, 132, 132);
+    color: white;
+    border-style: outset;
+    border-color: rgb(63, 63, 63);
+    height: 20px;
+    width: 160px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#get_started_button {
+    background: lightseagreen;
+    color: white;
+    border-style: outset;
+    border-color: aquamarine;
+    height: 20px;
+    width: 120px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#get_started_button:hover {
+    background: darkcyan;
+    color: white;
+    border-style: outset;
+    border-color: darkslateblue;
+    height: 20px;
+    width: 120px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#create_account_button {
+    background: mediumseagreen;
+    color: white;
+    border-style: outset;
+    border-color: darkseagreen;
+    height: 20px;
+    width: 250px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#create_account_button:hover {
+    background: forestgreen;
+    color: white;
+    border-style: outset;
+    border-color: darkgreen;
+    height: 20px;
+    width: 250px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#get_user_location_button {
+    background: mediumseagreen;
+    color: white;
+    border-style: outset;
+    border-color: darkseagreen;
+    height: 20px;
+    width: 200px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#get_user_location_button:hover {
+    background: forestgreen;
+    color: white;
+    border-style: outset;
+    border-color: darkgreen;
+    height: 20px;
+    width: 200px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#store_route_button, #retrieve_route_button {
+    background: rgb(179, 149, 60);
+    color: white;
+    border-style: outset;
+    border-color: rgb(188, 170, 143);
+    height: 20px;
+    width: 170px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
+
+#store_route_button:hover, #retrieve_route_button:hover {
+    background: rgb(139, 97, 34);
+    color: white;
+    border-style: outset;
+    border-color: rgb(100, 63, 0);
+    height: 20px;
+    width: 170px;
+    font: bold15px arial,sans-serif;
+    text-shadow: none;
+}
 
 #coord_add_button, #name_add_button {
     background: mediumseagreen;
@@ -110,7 +276,7 @@ h2 { color:darkslateblue }
     border-style: outset;
     border-color: red;
     height: 20px;
-    width: 160px;
+    width: 170px;
     font: bold15px arial,sans-serif;
     text-shadow: none;
 }
@@ -121,7 +287,7 @@ h2 { color:darkslateblue }
     border-style: outset;
     border-color: maroon;
     height: 20px;
-    width: 160px;
+    width: 170px;
     font: bold15px arial,sans-serif;
     text-shadow: none;
 }

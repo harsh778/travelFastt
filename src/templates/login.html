@@ -8,22 +8,31 @@
 </head>
 <body>
 
-<h1>Welcome! Please login below: </h1>
-    
-<form action="/login/", method = "post">
-    <h2>Username: </h2>
-    <input type="text", name="username"><br>
-    <h2>Password: </h2>
-    <input type="text", name="password"><br>
-<input type="submit", value="Login">
-</form>
-    
-<h2>{{return_info}}</h2>
+<h1 id="front_page_title"> Welcome to TravelFast!</h1>
 
-<form action="/create_account/", method="post">
-    <input type="submit", value="Don't have an account? Create one!">
-</form>
+<h1>Please login below: </h1>
+    
+<div id="login_form">
+    <form action="/login/", method = "post">
+        <h2>Username: </h2>
+        <input type="text", name="username"><br>
+        <h2>Password: </h2>
+        <input type="text", name="password"><br>
+        <input id="login_button", type="submit", value="Login">
+    </form>
+    <br>
+    <form action="/create_account/", method="post">
+        <input id="create_account_button", type="submit", value="Don't have an account? Create one!">
+    </form>
+</div>
+    
+<h3 id="failed_login_results">{{return_info}}</h3>
+
 <br>
+<!--
+
+Now that the login and database is fully functional these bypass buttons aren't needed
+
 <form action="/temp_bypass_to_map/", method="post">
     <input type="submit", value="See your location without an account">
 </form>
@@ -35,6 +44,9 @@
 <form action="/logout/", method="post">
     <input type="submit", value="Logout">
 </form>
+
+-->
+
 
 </body>
 </html>
