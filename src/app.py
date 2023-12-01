@@ -37,9 +37,7 @@ Session(app)
 mysql = MySQL(app)
 
 
-#user_credentials = {"Bob": "bobiscool", "John": "password"} # Just a placeholder for the real database system for now
-
-user_locations = [] # Just a placeholder for the real database system for now
+user_locations = []
 user_location_names = []
 
 has_added_personal_location = False # Set to true if the user uses the current location feature
@@ -88,9 +86,16 @@ def logout():
         session['loggedin'] = False
         session['id'] = None
         session['username'] = None
+        session['routes'] = None
         msg = 'You have been logged out.'
+        #Reset instance variables back to defaults
+        global user_locations, user_location_names, has_added_personal_location
+        user_location_names = []
+        user_locations = []
+        has_added_personal_location = False
     else:
         msg = 'You never logged in. Please login'
+
     return render_template("login.html", return_info = msg)
 
 
@@ -149,6 +154,12 @@ def store_user_route():
         
         myConnection = mysql.connection
         insertCursor = mysql.connection.cursor()
+
+        #First deletes the previously saved route if any for the user
+        mySQLCommand = 'DELETE FROM travelfast.routes WHERE user_id = \'' + str(user_id) + '\';'
+        insertCursor.execute( mySQLCommand )
+
+        #Then save the new route as a replacement to that row
         mySQLCommand = 'INSERT INTO travelfast.routes (user_id, latitude, longitude, location_names) VALUES (\'' + str(user_id) + '\',\'' + latitudes_blob + '\', \'' + longitudes_blob + '\', \'' + location_names_blob + '\');' 
         insertCursor.execute( mySQLCommand )
         myConnection.commit()
@@ -181,6 +192,16 @@ def locations_to_blob():
         names = None
     return [lats, longs, names]
 
+# helper to convert database strings back to route lat long pairs and user_location_names
+def db_return_to_locations_and_names(database_map): # returns 2-tuple, first item is route locations, second is user_location_names
+    latitudes = database_map['latitude'].decode().split(", ")
+    longitudes = database_map['longitude'].decode().split(", ")
+    location_names = database_map['location_names'].decode().split(", ")
+    location_lat_long_pairs = []
+    for lat, long in zip(latitudes, longitudes):
+        location_lat_long_pairs.append([lat, long])
+    return (location_lat_long_pairs, location_names)
+
 
 
 # ------------ RETRIEVE USER'S ROUTES --------------
@@ -191,15 +212,22 @@ def retrieve_user_route():
     msg = ''
     if session['loggedin'] and request.method == 'POST': 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        mySQLCommand = 'SELECT * FROM travelfast.routes WHERE id = \'' + session['id'] + '\';'
+        mySQLCommand = 'SELECT * FROM travelfast.routes WHERE user_id = \'' + str(session['id']) + '\';'
         cursor.execute( mySQLCommand )
         route = cursor.fetchone()
         if route:
             session['routes'] = route
-            msg = 'We retrieved your routes'
-            return render_template("home.html", return_info=msg) 
-        msg = 'You have no routes saved'
-        return render_template("home.html", return_info=msg)
+            route_locations, route_names = db_return_to_locations_and_names(session['routes'])
+            formatted_route_string = "Full Route --> "
+            for i, location in enumerate(route_locations):
+                formatted_route_string += f"Stop {i + 1}: "
+                if (route_names[i] == "Unnamed"):
+                    formatted_route_string += f"Latitude {location[0]}, Longitude {location[1]}. "
+                else:
+                    formatted_route_string += route_names[i] + ". "
+            return render_template("route_finder.html", return_info = formatted_route_string)
+        msg = 'You have no route saved!'
+        return render_template("route_finder.html", return_info=msg, user_welcome = msg)
     msg = 'You must be logged in to save routes'
     return render_template("login.html", return_info=msg)
 
@@ -331,6 +359,7 @@ def calculate_route():
 
     if len(user_locations) <= 1:
         return render_template("route_finder.html", return_info = "You must input at least two locations")
+    session['routes'] = None # User is now using new calculated route not a loaded route from database
     route = route_algorithm_method(user_locations)
     sorted_indices = [i for i in range(len(route))]
     for i, location in enumerate(route):
@@ -352,7 +381,11 @@ def calculate_route():
 @app.route('/return_route/', methods=["POST", "GET"])
 def return_route():
     unused_request = request.get_json(force=True) # Don't actually need anything from the request but need to 'process' it
-    route = route_algorithm_method(user_locations) # Later this should just be a fetch from the database instead of recalculating every time
+    route = []
+    if session['routes']: # If the user loaded a route from the database and wants to show that this will be non-null
+        route, names = db_return_to_locations_and_names(session['routes']) # names isn't important for this so it's unused
+    else:
+        route = route_algorithm_method(user_locations)
     response = make_response(jsonify(route))
     return response
 
