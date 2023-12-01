@@ -3,44 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <title>Route Finder</title>
-    <link href="global.css" rel="stylesheet" type="text/css">
+    <!-- CSS bug fix courtesy of https://stackoverflow.com/questions/13772884/css-problems-with-flask-web-app-->
+    <link href="{{ url_for('static', filename='global.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<h1>Add the Destinations You Want in Your Route Below by its Coordinates:</h1>
-    
-<form action="/add_location_by_coords/", method = "post">
-    <h2>Latitude: </h2>
-    <input type="number", step="any", name="latitude"><br>
-    <h2>Longitude: </h2>
-    <input type="number", step="any", name="longitude"><br>
-<input type="submit", value="Add Location">
-</form>
+<h3 id = "user_welcome">{{user_welcome}}</h3> <!-- will only show this the first time they open the page -->
 
-<h1>Or Alternatively, Add the Destination by its Name:</h1>
-<p>Make sure to be specific and note that addresses work a lot better than the name alone for smaller places</p>
+<h1 id = "title">TravelFast Route Finder</h1>
 
-<form action="/add_location_by_name", method = "post">
-    <h2>Name of the Place: </h2>
-    <input type="text", name="name"><br>
-<input type="submit", value="Add Location">
-</form><br>
+<div id="outer_centering">
+    <h1>Add the Destinations You Want in Your Route Below by its Coordinates:</h1>
 
-<h1>Ready to Get Your Route? Select one of the Algorithms Below:</h1>
+    <div id = "coord_adder_form">
+        <form action="/add_location_by_coords/", method = "post">
+            <h2>Latitude: </h2>
+            <input type="number", step="any", name="latitude"><br>
+            <h2>Longitude: </h2>
+            <input type="number", step="any", name="longitude"><br>
+            <br>
+            <input id="coord_add_button" type="submit", value="Add Location">
+        </form>
+    </div>
 
-<form action="/calculate_route/", method="post">
-    <input type="radio", name="algorithm_choice", value="Brute Force"> Brute Force <br>
-    <input type="radio", name="algorithm_choice", value="Nearest Neighbors"> Nearest Neighbors <br>
-    <input type="submit", value="Calculate my route!">
-</form><br>
+    <h1>Or Alternatively, Add the Destination by its Name:</h1>
+    <p>*Make sure to be specific and note that addresses work a lot better than the name alone for smaller places*</p>
 
-<form action="/clear_route_locations/", method="post">
-    <input type="submit", value="Clear all places in route">
-</form><br>
-    
-<h1>Current Locations Added: </h1>
-<p style="color:green">{{return_info}}</p>
-<p style="color:green">{{place_names}}</p>
+    <div id = "name_adder_form">
+        <form action="/add_location_by_name", method = "post">
+            <h2>Name of the Place: </h2>
+            <input type="text", name="name"><br>
+            <br>
+            <input id="name_add_button" type="submit", value="Add Location">
+        </form>
+    </div><br>
+
+    <h1>Want to Add Your Current Location to Your Route?</h1>
+    <button id="get_user_location_button", onclick="getUserLocation()">Add My Current Location</button>
+
+    <h1>Ready to Get Your Route?</h1>
+
+    <div id = "algorithm_choice_form">
+        <form action="/calculate_route/", method="post">
+            <h2>Select one of the Algorithms Below: </h2>
+            <input type="radio", name="algorithm_choice", value="Brute Force"> Brute Force <br>
+            <input type="radio", name="algorithm_choice", value="Nearest Neighbors"> Nearest Neighbors <br>
+            <input type="radio", name="algorithm_choice", value="Dynamic Programming"> Dynamic Programming <br>
+            <input type="radio", name="algorithm_choice", value="Genetic Algorithm"> Genetic Algorithm <br>
+            <br>
+            <input id="calculate_route_button" type="submit", value="Calculate my route!">
+        </form>
+        <br>
+        <form action="/retrieve_user_route/", method="post">
+            <h3>Or If You Already Have a Saved Route: </h3>
+            <input id="retrieve_route_button" type="submit", value="Load My Saved Route">
+        </form>
+
+    </div><br>
+
+    <form action="/store_user_route/", method="post">
+        <p>*Note this will overwrite your currently saved route if applicable*</p>
+        <input id="store_route_button" type="submit", value="Save Route to Account">
+    </form>
+    <br>
+
+    <form action="/clear_route_locations/", method="post">
+        <input id = "clear_route_button" type="submit", value="Clear all places in route">
+    </form><br>
+        
+    <h1>Current Locations Added: </h1>
+    <p id="return_info">{{return_info}}</p>
+    <p id="place_names">{{place_names}}</p>
+</div>
+
+<!--                                                        -->
+<!--  Getting the user's location and sending it to backend -->
+<!--                                                        -->
+
+    <script>
+        function getUserLocation() {
+            let location;
+            // Below is slightly modified migrated code from the now-depracated home.html
+            try {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    location = [latitude, longitude];
+                    sendUserLocationToServer(location);
+                });
+            } catch (err) {
+                //location = [2000, 2000]; // Impossible values (if we get this returned then the location getting failed)
+                console.log("Location get failure");
+            }
+        }
+        function sendUserLocationToServer(user_location) {
+            fetch('/add_user_current_location', { method: "POST", credentials: "include", body: JSON.stringify(user_location)}).then(
+                (response) => console.log("Success")); // Don't actually care about this, just need to resolve the promise
+            window.location.href = '/user_location_added_follow_up/';
+        }
+    </script>
 
 <!--                                   -->
 <!--  Actually Showing the Route Code: -->
@@ -50,9 +111,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 
-    <style>
-        #map { height: 400px } /* Wanted to put this in the css file but for some reason wasn't working there */
-    </style>
     <script>
         function displayRoute() {
             // Map Setup (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)
@@ -100,10 +158,13 @@
     </script>
 
 <div id="map"></div>
-<button id="test", onclick="displayRoute()">Show Me My Route!</button>
+
+<div id="show_route">
+    <button id="show_route_button", onclick="displayRoute()">Show Me My Route!</button>
+</div>
 
 <form action="/logout/", method="post">
-    <input type="submit", value="Logout">
+    <input id="logout_button" type="submit", value="Logout">
 </form>
 
 </body>

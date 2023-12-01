@@ -1,9 +1,14 @@
+<!-- NO LONGER IN USE. Functionality of this page has been migrated to route_finder.html. -->
+<!-- This file is still here solely for bookkeeping and no longer serves any purpose-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
-    <link href="global.css" rel="stylesheet" type="text/css">
+    <!-- CSS bug fix courtesy of https://stackoverflow.com/questions/13772884/css-problems-with-flask-web-app-->
+    <link href="{{ url_for('static', filename='global.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Required imports for leaflet.js (Source: https://openjavascript.info/2022/12/11/map-live-user-location-using-leaflet-js/)-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
