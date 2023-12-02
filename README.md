@@ -33,7 +33,7 @@ is an in-depth link for how to create a Python virtual environment with packages
 Once you have a venv, you will need to pip install the following packages:
 flask, flask_session, flask_mysqldb, secrets, re, MySQLdb.
 
-Once all installations are complete and you are inside of your venv, you may run:
+Once all installations are complete, your venv is running, and you are in the parent directory, you may run:
 ```
 python -m flask --app src/app.py run
 ```
