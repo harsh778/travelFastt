@@ -18,7 +18,7 @@ For an in-depth look at our app, see our project proposal [here](https://docs.go
 - **Aydin Ali**: Designed the whole frontend UI with Javascript handling for map display with coordinates and route calculation methods in Flask Server
 - **Mike Koziol**: Implemented Flask Server with sessions and MySQL Database functionality
 - **Ajitesh Dasaratha**: Made different algorithms to calculate routes
-- **Harsh Singhal**: Very limited contribution
+- **Harsh Singhal**: Researched algorithms and explained workings to Ajitesh for implementation purposes.
 
 
 ## Getting Started With Our App:
